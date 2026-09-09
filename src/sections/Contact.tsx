@@ -4,19 +4,14 @@ import { useRef } from "react";
 
 import { GutterIndex } from "@/components/ui/Drawing";
 import { RevealText, Rise } from "@/components/ui/RevealText";
-import { CONTACT_LINKS, EMAIL } from "@/data/work";
+import { CONTACT_LINKS } from "@/data/work";
 import { useChapterRange } from "@/lib/useChapterRange";
 
 export function Contact() {
   const ref = useRef<HTMLElement>(null);
   useChapterRange(ref, 3, 3, { start: "top 80%", end: "bottom bottom" });
 
-  const links = EMAIL
-    ? [
-        ...CONTACT_LINKS,
-        { label: "Email", value: EMAIL, href: `mailto:${EMAIL}` },
-      ]
-    : CONTACT_LINKS;
+  const links = CONTACT_LINKS;
 
   return (
     <section
@@ -59,7 +54,7 @@ export function Contact() {
               <li key={link.href} className="rule-t">
                 <a
                   href={link.href}
-                  target={link.href.startsWith("mailto:") ? undefined : "_blank"}
+                  target={link.href.startsWith("http") ? "_blank" : undefined}
                   rel="noopener noreferrer"
                   data-magnetic
                   className="group flex items-baseline justify-between gap-6 py-5"

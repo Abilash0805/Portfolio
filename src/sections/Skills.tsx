@@ -10,12 +10,12 @@ import { useChapterRange } from "@/lib/useChapterRange";
 import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
 
 /**
- * Pinned with position: sticky rather than a GSAP pin — no pin-spacer to fight
- * with Lenis, and it survives a resize without a refresh.
+ * Two presentations, chosen in CSS so there is no hydration branch.
  *
- * The three categories map onto the construct's three working formations:
- * software -> component grid, hardware -> board traces, creative -> layered
- * planes. The 3D changes character with the reading, which is the point.
+ * Desktop pins the panel and swaps one category at a time, which is what
+ * drives the construct through its three working formations. On a phone that
+ * would mean 300vh of pinned scroll to read nine words, so small screens get
+ * the whole list stacked and readable instead.
  */
 export function Skills() {
   const ref = useRef<HTMLElement>(null);
@@ -36,15 +36,45 @@ export function Skills() {
 
   return (
     <section ref={ref} id="skills" className="relative z-10">
-      <div className="h-[300vh]">
+      {/* ---- small screens: everything stacked, nothing pinned ---- */}
+      <div className="relative page-x py-24 md:hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-ink/82" />
+        <div className="relative">
+          <div className="mb-10 flex items-baseline gap-3">
+            <span className="type-mono text-brass">02</span>
+            <span className="type-mono text-mist">Skills</span>
+          </div>
+
+          {SKILLS.map((s) => (
+            <div key={s.id} className="rule-t py-8">
+              <div className="flex items-baseline gap-4">
+                <span className="type-mono text-brass">{s.index}</span>
+                <h3 className="type-display text-display-m">{s.title}</h3>
+              </div>
+              <p className="mt-4 text-[1rem] leading-[1.6] text-on-ink/75">
+                {s.line}
+              </p>
+              <ul className="mt-6 grid grid-cols-2 gap-x-6">
+                {s.items.map((item) => (
+                  <li
+                    key={item}
+                    className="rule-t py-2.5 text-[0.875rem] text-on-ink/85"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ---- md and up: pinned, one category at a time ---- */}
+      <div className="hidden md:block md:h-[300vh]">
         <div className="sticky top-0 flex h-svh items-center overflow-hidden page-x">
-          {/* Scrim: the copy sits on both sides of the construct here, so it
-              needs a full-bleed veil, not a one-sided gradient. The construct
-              still reads through it. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-ink/78"
-          />
+          {/* The copy sits on both sides of the construct here, so it needs a
+              full-bleed veil, not a one-sided gradient. */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 bg-ink/78" />
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink via-transparent to-ink/90"
@@ -54,7 +84,7 @@ export function Skills() {
             <GutterIndex n="02" label="Skills" />
 
             <div className="md:col-span-5 md:col-start-3">
-              <ul className="space-y-0">
+              <ul>
                 {SKILLS.map((s, i) => (
                   <li key={s.id} className="rule-t">
                     <button
@@ -66,7 +96,9 @@ export function Skills() {
                     >
                       <span
                         className="type-mono shrink-0"
-                        style={{ color: i === active ? "var(--color-brass)" : "inherit" }}
+                        style={{
+                          color: i === active ? "var(--color-brass)" : "inherit",
+                        }}
                       >
                         {s.index}
                       </span>

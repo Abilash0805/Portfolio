@@ -114,12 +114,24 @@
   }
 }
 
+/* Rules carry current: --charge is published by the scroll loop, so the whole
+   drawing warms toward brass the faster you move. */
 @utility rule-t {
-  border-top: 1px solid var(--color-rule-dark);
+  border-top: 1px solid
+    color-mix(
+      in oklab,
+      var(--color-brass) calc(var(--charge, 0) * 55%),
+      var(--color-rule-dark)
+    );
 }
 
 @utility rule-b {
-  border-bottom: 1px solid var(--color-rule-dark);
+  border-bottom: 1px solid
+    color-mix(
+      in oklab,
+      var(--color-brass) calc(var(--charge, 0) * 55%),
+      var(--color-rule-dark)
+    );
 }
 
 /* Chapters that invert to Bone re-point the rule tokens rather than

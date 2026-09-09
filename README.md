@@ -6,16 +6,14 @@ competition deadlines.
 
 ## Before this goes live
 
-Two things need Abilash's input — both are deliberately left blank rather
-than guessed at:
-
-1. **Email.** `EMAIL` in `src/data/work.ts` is an empty string. Fill it in and
-   the contact section grows an email row automatically. Left empty, the row
-   is simply omitted.
-2. **The Orixen preview image.** `public/work/orixen.png` is a *designed
-   stand-in*, not a screenshot — the sandbox this was built in could not reach
+1. **The Orixen preview image.** `public/work/orixen.png` is a *designed
+   composition built from the real site's identity* — navy space ground,
+   electric blue, the ORIXEN DIGITAL lockup and the live service list. It is
+   not a screenshot; the sandbox this was built in could not reach
    `orixendigital.vercel.app`. Drop a real screenshot at that exact path to
    replace it; nothing else needs to change.
+2. **Check the phone dial code.** `PHONE_HREF` in `src/data/work.ts` assumes
+   +91 (India). Change it there if that is wrong.
 
 `studydesk.png` and `robotics.png` are intentionally designed visuals (an
 interface concept and a signal-path schematic), not screenshots. Regenerate
@@ -86,6 +84,14 @@ drifts. Sections claim *disjoint* chapter ranges and write a target the
 construct chases, which is why overlapping triggers cannot fight each other.
 Skills is pinned with `position: sticky` rather than a GSAP pin, so there is
 no pin-spacer to fight Lenis and it survives a resize without a refresh.
+
+## Navigation
+
+Desktop gets a marginal chapter index down the right edge, doubling as the
+progress indicator. Small screens get a full menu (`MobileNav`) — the floating
+bar senses whether an Ink or Bone chapter is beneath it and inverts, and
+opening the menu stops Lenis rather than only hiding body overflow, because a
+wheel-driven smooth scroller keeps going otherwise.
 
 ## Accessibility and performance
 

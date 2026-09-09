@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { useEffect } from "react";
 
-import { flux, useUI } from "@/lib/store";
+import { flux, lenisRef, useUI } from "@/lib/store";
 
 /**
  * Lenis drives the scroll; GSAP's ticker drives Lenis; ScrollTrigger updates
@@ -24,6 +24,7 @@ export function SmoothScroll({ reducedMotion }: { reducedMotion: boolean }) {
     let lenis: Lenis | null = null;
     let rafId = 0;
     let cleanupTicker = () => {};
+    let lastCharge = -1;
 
     const onScrollNative = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -44,6 +45,8 @@ export function SmoothScroll({ reducedMotion }: { reducedMotion: boolean }) {
         // ~40px/frame is a hard flick; normalise against that.
         flux.velocity = gsap.utils.clamp(-1, 1, e.velocity / 40);
       });
+
+      lenisRef.current = lenis;
 
       const tick = (time: number) => lenis?.raf(time * 1000);
       gsap.ticker.add(tick);
@@ -91,6 +94,15 @@ export function SmoothScroll({ reducedMotion }: { reducedMotion: boolean }) {
       // Chapter chases its target rather than being written directly, so the
       // construct keeps momentum through a section boundary.
       flux.chapter += (flux.chapterTarget - flux.chapter) * 0.075;
+
+      // Publish scroll energy to CSS so the drawing's hairlines carry current
+      // when you move. Only written when it actually changes, to keep style
+      // recalculation off the hot path.
+      const charge = Math.round(flux.energy * 50) / 50;
+      if (charge !== lastCharge) {
+        lastCharge = charge;
+        document.documentElement.style.setProperty("--charge", String(charge));
+      }
       rafId = requestAnimationFrame(loop);
     };
     rafId = requestAnimationFrame(loop);
@@ -103,6 +115,7 @@ export function SmoothScroll({ reducedMotion }: { reducedMotion: boolean }) {
       window.removeEventListener("pointermove", onPointer);
       cleanupTicker();
       trigger?.kill();
+      lenisRef.current = null;
       lenis?.destroy();
     };
   }, [reducedMotion, setActiveChapter]);

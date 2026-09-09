@@ -34,7 +34,7 @@ export function SpecTable({
       {rows.map((row) => (
         <div
           key={row.label}
-          className="rule-t grid grid-cols-[7.5rem_1fr] gap-4 py-3 sm:grid-cols-[9.5rem_1fr]"
+          className="rule-t grid grid-cols-[5.5rem_1fr] gap-4 py-3 sm:grid-cols-[9.5rem_1fr]"
         >
           <dt className="type-mono pt-[0.2rem] text-muted-fg">{row.label}</dt>
           <dd className="text-[0.9375rem] leading-relaxed text-current/85">

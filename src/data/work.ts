@@ -163,14 +163,44 @@ export const SKILLS: SkillGroup[] = [
   },
 ];
 
-/**
- * Not filled in: this was built without access to Abilash's address. Set it
- * and the contact section picks up the row automatically.
- */
-export const EMAIL = "";
+/** Personal and studio contact. Phone is assumed +91 (India) — change the
+ *  dial code here if that is wrong. */
+export const PHONE_DISPLAY = "+91 97890 10266";
+export const PHONE_HREF = "tel:+919789010266";
 
 export const CONTACT_LINKS = [
-  { label: "Instagram", value: "@orixen_digital.in", href: "https://instagram.com/orixen_digital.in" },
-  { label: "Studio", value: "orixendigital.vercel.app", href: "https://orixendigital.vercel.app" },
-  { label: "GitHub", value: "github.com/Abilash0805", href: "https://github.com/Abilash0805" },
+  { label: "Phone", value: PHONE_DISPLAY, href: PHONE_HREF },
+  {
+    label: "Instagram",
+    value: "@wanderer_on_wheels85",
+    href: "https://instagram.com/wanderer_on_wheels85",
+  },
+  {
+    label: "Studio",
+    value: "@orixen_digital.in",
+    href: "https://instagram.com/orixen_digital.in",
+  },
+  {
+    label: "Orixen",
+    value: "orixendigital.vercel.app",
+    href: "https://orixendigital.vercel.app",
+  },
+  {
+    label: "GitHub",
+    value: "github.com/Abilash0805",
+    href: "https://github.com/Abilash0805",
+  },
+];
+
+/** What the marquee band cycles through. */
+export const MARQUEE = [
+  "Websites",
+  "Brand identity",
+  "Video editing",
+  "Study materials",
+  "QR menu cards",
+  "Portfolios",
+  "Billing automation",
+  "Robotics",
+  "Instagram management",
 ];

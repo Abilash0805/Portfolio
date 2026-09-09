@@ -16,6 +16,7 @@ export function About() {
     <section
       ref={ref}
       id="about"
+      data-chapter="light"
       className="chapter-light relative z-10 page-x py-28 md:py-40"
     >
       <div className="drawing-grid mx-auto max-w-[88rem]">

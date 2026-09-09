@@ -24,32 +24,81 @@ body{width:1600px;height:1067px;background:${INK};color:${BONE};
 ${extra}
 </style></head><body>${body}</body></html>`;
 
+// Orixen's own service list and identity, taken from the live site.
 const SERVICES = [
-  "Website development", "Graphic design", "Branding",
-  "Video editing", "Digital content", "Study materials",
-  "Billing automation", "Instagram management", "QR menu cards",
+  "School projects", "Websites", "Study materials",
+  "Digital menus", "Portfolios", "Video edits",
 ];
 
-const orixen = shell(`
-<div style="padding:84px 104px;height:100%;display:flex;flex-direction:column;justify-content:space-between">
-  <div>
-    <div style="font-size:112px;font-weight:800;letter-spacing:-.05em;line-height:.86">Orixen</div>
-    <div style="font-size:112px;font-weight:300;letter-spacing:.01em;line-height:.86;color:${MIST}">Digital</div>
-    <div style="font-size:25px;line-height:1.5;margin-top:34px;max-width:700px;color:rgba(230,231,226,.72)">
-      Websites, brand, video and the systems in between. One studio, run end to end.
+const NAVY = "#070B16";
+const BLUE = "#3b82f6";
+const STEEL = "#8a93a8";
+
+// Deterministic starfield — the composition must not change between renders.
+let seed = 7;
+const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+const stars = Array.from({ length: 130 }, () => ({
+  x: +(rnd() * 1600).toFixed(1),
+  y: +(rnd() * 1067).toFixed(1),
+  r: +(0.6 + rnd() * 1.5).toFixed(2),
+  o: +(0.15 + rnd() * 0.5).toFixed(2),
+}));
+
+const orixen = shell(
+  `
+<div style="position:relative;width:1600px;height:1067px;overflow:hidden;background:
+     radial-gradient(120% 90% at 50% 8%, #16224a 0%, ${NAVY} 55%, #04060d 100%)">
+
+  <svg width="1600" height="1067" style="position:absolute;inset:0">
+    ${stars.map((s) => `<circle cx="${s.x}" cy="${s.y}" r="${s.r}" fill="#ffffff" opacity="${s.o}"/>`).join("")}
+    <g fill="none" stroke="${BLUE}" opacity=".28">
+      <ellipse cx="800" cy="560" rx="470" ry="330" stroke-width="1.1"
+               transform="rotate(-18 800 560)"/>
+      <ellipse cx="800" cy="560" rx="330" ry="460" stroke-width="1.1"
+               transform="rotate(24 800 560)"/>
+      <ellipse cx="800" cy="560" rx="410" ry="410" stroke-width="0.8" opacity=".5"/>
+    </g>
+  </svg>
+
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;
+              justify-content:space-between;padding:70px 88px">
+
+    <div style="display:flex;align-items:center;gap:18px">
+      <div style="width:52px;height:52px;border-radius:13px;background:#0d1striped;
+                  background:linear-gradient(150deg,#1b2540,#0a0f1e);
+                  border:1px solid rgba(59,130,246,.5);display:grid;place-items:center;
+                  color:${BLUE};font-size:25px;font-weight:700">&#593;</div>
+      <div>
+        <div style="font-size:24px;font-weight:700;letter-spacing:.34em;line-height:1">ORIXEN</div>
+        <div style="font-size:12px;font-weight:500;letter-spacing:.46em;color:${BLUE};margin-top:5px">DIGITAL</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:-40px">
+      <div style="display:inline-block;border:1px solid rgba(138,147,168,.35);
+                  border-radius:999px;padding:9px 26px;margin-bottom:40px">
+        <span class="mono" style="color:${STEEL};font-size:12px">
+          <span style="color:${BLUE}">&#9679;</span>&nbsp;&nbsp;DESIGNING SOLUTIONS&nbsp;&nbsp;CREATING IMPACT</span>
+      </div>
+      <div style="font-size:104px;font-weight:800;letter-spacing:-.035em;line-height:.98;
+                  background:linear-gradient(180deg,#ffffff,#a9b2c6);
+                  -webkit-background-clip:text;-webkit-text-fill-color:transparent">
+        Digital Experiences</div>
+      <div style="font-size:104px;font-weight:800;letter-spacing:-.035em;line-height:1.02;color:${BLUE}">
+        From The Future</div>
+      <p style="max-width:760px;margin:34px auto 0;font-size:21px;line-height:1.55;color:#aeb6c8">
+        Immersive websites, digital products and creative work — built end to end.</p>
+    </div>
+
+    <div>
+      <div style="height:1px;background:rgba(138,147,168,.24);margin-bottom:26px"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        ${SERVICES.map((s) => `<span class="mono" style="color:${STEEL};font-size:13px">${s.toUpperCase()}</span>`).join("")}
+      </div>
     </div>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(230,231,226,.13)">
-    ${SERVICES.map((s, i) => `<div style="background:${GRAPHITE};padding:42px 30px">
-      <div class="mono" style="color:${BRASS};font-size:12px">${String(i + 1).padStart(2, "0")}</div>
-      <div style="font-size:24px;font-weight:500;margin-top:16px;letter-spacing:-.01em">${s}</div>
-    </div>`).join("")}
-  </div>
-  <div style="display:flex;justify-content:space-between" class="mono">
-    <span style="color:${MIST}">orixendigital.vercel.app</span>
-    <span style="color:${MIST}">@orixen_digital.in</span>
-  </div>
-</div>`);
+</div>`,
+);
 
 const studydesk = shell(`
 <div style="height:100%;display:flex">

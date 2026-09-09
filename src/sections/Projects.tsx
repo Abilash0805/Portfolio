@@ -30,6 +30,7 @@ export function Projects() {
     <section
       ref={ref}
       id="work"
+      data-chapter="light"
       className="chapter-light relative z-10 page-x py-28 md:py-40"
     >
       <div className="drawing-grid mx-auto max-w-[88rem]">
@@ -46,8 +47,17 @@ export function Projects() {
       <div className="mx-auto mt-24 max-w-[88rem] space-y-28 md:mt-36 md:space-y-44">
         {PROJECTS.map((project, i) => (
           <article key={project.id} className="drawing-grid">
-            <div className="md:col-span-1">
+            <div className="relative md:col-span-1">
               <span className="type-mono text-oxide">{project.index}</span>
+              {/* The part number, blown up as a drawing callout. Outlined so
+                  it sits behind the content as structure, not decoration. */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -top-10 -left-6 hidden text-[8rem] leading-none font-semibold tracking-tighter text-transparent select-none md:block"
+                style={{ WebkitTextStroke: "1px var(--color-rule-dark)" }}
+              >
+                {project.index}
+              </span>
             </div>
 
             <div

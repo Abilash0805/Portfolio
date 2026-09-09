@@ -28,6 +28,11 @@ export const flux = {
   hovering: false,
 };
 
+/** Set by SmoothScroll. The mobile menu stops it while open — hiding body
+ *  overflow does not stop a wheel-driven smooth scroller. */
+export const lenisRef: { current: { stop: () => void; start: () => void } | null } =
+  { current: null };
+
 export const CHAPTERS = ["core", "grid", "trace", "fan"] as const;
 export type Chapter = (typeof CHAPTERS)[number];
 

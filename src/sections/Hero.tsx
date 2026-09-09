@@ -19,36 +19,35 @@ export function Hero() {
     <section
       ref={ref}
       id="hero"
-      className="relative flex min-h-svh flex-col justify-between page-x py-8 md:py-10"
+      // Phones stack: construct on top, copy anchored to the bottom. Wide
+      // viewports put the copy beside it and spread to the full height.
+      className="relative flex min-h-svh flex-col justify-end gap-12 page-x pt-28 pb-10 md:justify-between md:gap-0 md:py-10"
     >
       {/* On narrow screens the construct sits above the copy rather than
           beside it, so the type still needs solid ground under it. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[72%] bg-gradient-to-t from-ink via-ink/94 to-transparent md:hidden"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-ink via-ink/94 to-transparent md:hidden"
       />
 
-      <div className="relative flex items-start justify-between gap-6">
+      <div className="relative hidden items-start justify-between gap-6 md:flex">
         <span className="type-mono text-mist">Abilash V</span>
         <span className="type-mono text-right text-mist">
-          <span className="sm:hidden">Orixen Digital</span>
-          <span className="hidden sm:inline">
-            Class 12 / Founder, Orixen Digital
-          </span>
+          Class 12 / Founder, Orixen Digital
         </span>
       </div>
 
       <div className="relative max-w-[52rem]">
+        <span className="type-mono mb-6 block text-mist md:hidden">
+          Class 12 / Founder, Orixen Digital
+        </span>
         <h1 className="type-display text-display-xl">
           <RevealText as="span" stagger={0.08}>
             Abilash V
           </RevealText>
-          <span className="sr-only">
-            {" "}
-            — developer, designer and founder
-          </span>
+          <span className="sr-only"> — developer, designer and founder</span>
         </h1>
-        <p className="type-display mt-8 max-w-[24ch] text-display-m text-mist">
+        <p className="type-display mt-6 max-w-[24ch] text-display-m text-mist md:mt-8">
           <RevealText as="span" delay={0.35} stagger={0.03}>
             Builds the software, the brand, and the board it runs on.
           </RevealText>
@@ -62,7 +61,7 @@ export function Hero() {
           job needs a physical answer.
         </p>
 
-        <div className="flex shrink-0 flex-col items-center gap-3">
+        <div className="hidden shrink-0 flex-col items-center gap-3 sm:flex">
           <span className="type-mono text-mist">Scroll</span>
           <div className="h-14 w-px overflow-hidden bg-on-ink/15">
             {!reduced && (
