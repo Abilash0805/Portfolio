@@ -227,9 +227,19 @@ const robotics = shell(`
 
 const browser = await launch();
 const page = await browser.newPage({ viewport: { width: 1600, height: 1067 } });
-for (const [name, html] of Object.entries({ orixen, studydesk, robotics })) {
-  await page.setContent(html, { waitUntil: "load" });
-  await page.screenshot({ path: `public/work/${name}.png` });
-  console.log("rendered", name);
+// The Orixen board is gradient- and starfield-heavy, which PNG stores
+// terribly (517 kB). JPEG handles that content in a fraction of the bytes.
+// The other two are flat colour and crisp rules, where PNG is both smaller
+// and artefact-free.
+const targets = [
+  { name: "orixen", html: orixen, ext: "jpg", opts: { quality: 88, type: "jpeg" } },
+  { name: "studydesk", html: studydesk, ext: "png", opts: { type: "png" } },
+  { name: "robotics", html: robotics, ext: "png", opts: { type: "png" } },
+];
+
+for (const t of targets) {
+  await page.setContent(t.html, { waitUntil: "load" });
+  await page.screenshot({ path: `public/work/${t.name}.${t.ext}`, ...t.opts });
+  console.log("rendered", `${t.name}.${t.ext}`);
 }
 await browser.close();

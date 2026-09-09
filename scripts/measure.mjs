@@ -1,6 +1,6 @@
 import { launch } from "./lib-browser.mjs";
 
-const URL = process.env.M_URL ?? "http://127.0.0.1:3777";
+const URL = process.env.M_URL ?? "http://127.0.0.1:4888";
 const reduced = process.env.M_REDUCED === "1";
 
 const browser = await launch({
@@ -11,7 +11,7 @@ const page = await browser.newPage({
   reducedMotion: reduced ? "reduce" : "no-preference",
 });
 
-let bytes = 0;
+let bytes = 0; // reset after the warm-up pass
 const byType = {};
 page.on("response", async (r) => {
   try {
@@ -23,7 +23,13 @@ page.on("response", async (r) => {
   } catch {}
 });
 
+// First navigation in a cold browser process pays JIT and cache costs that
+// have nothing to do with the page. Warm once, then measure.
 await page.goto(URL, { waitUntil: "load", timeout: 60000 });
+await page.waitForTimeout(1500);
+bytes = 0;
+for (const k of Object.keys(byType)) delete byType[k];
+await page.goto(URL + "?m=1", { waitUntil: "load", timeout: 60000 });
 await page.waitForTimeout(6000);
 
 const vitals = await page.evaluate(

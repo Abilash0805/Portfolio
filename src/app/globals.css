@@ -1,43 +1,37 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 /* ---------------------------------------------------------------------------
-   Workbench at night — solder, amber CRT, machined graphite.
-   One warm signal (Brass) against a cool neutral ramp. The second "accent"
-   is not a hue: it is the Ink -> Bone inversion between chapters.
+   DEEP FIELD
+   Deep-space navy ground, one electric blue signal, glass surfaces.
+   Chapters do not invert — they gain intensity. The blue field brightens as
+   the story advances, which is the "progressive reveal" the scroll pattern
+   asks for.
 --------------------------------------------------------------------------- */
 
 @theme {
-  --color-ink: #0a0c10;
-  --color-graphite: #151920;
-  --color-bone: #e6e7e2;
-  --color-brass: #e9a93c;
-  --color-oxide: #8c5a2b;
-  --color-mist: #9aa1ac;
+  --color-bg: #05070e;
+  --color-bg-lift: #080d1a;
+  --color-fg: #eef2f8;
+  --color-muted: #8a96ad;
 
-  /* Foregrounds, derived so contrast intent is explicit at the call site. */
-  --color-on-ink: #f2f3f0;
-  --color-on-bone: #12151a;
-  --color-bone-mute: #5c6167;
+  /* Fills take white text (5.17:1). Accent TEXT uses accent-fg (7.92:1). */
+  --color-accent: #2563eb;
+  --color-accent-fg: #60a5fa;
+  --color-on-accent: #ffffff;
+  --color-glow: #3b82f6;
 
-  /* Muted label colour. Defaults to the value that passes on Ink and is
-     re-pointed by chapter-light to the value that passes on Bone, so small
-     mono labels clear 4.5:1 in both chapters (7.52:1 and 5.03:1). */
-  --color-muted-fg: #9aa1ac;
+  --color-hairline: color-mix(in oklab, #ffffff 11%, transparent);
+  --color-glass: color-mix(in oklab, #ffffff 4%, transparent);
 
-  /* Hairlines. Rules are the primary structural device on this site, so they
-     are tokens rather than one-off border colors. */
-  --color-rule-dark: color-mix(in oklab, #f2f3f0 14%, transparent);
-  --color-rule-light: color-mix(in oklab, #12151a 16%, transparent);
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
-  --font-display: var(--font-bricolage), "Geist", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
-
-  /* Fluid display scale. Minor third at text sizes, wider ratio for display. */
-  --text-display-xl: clamp(3.25rem, 11vw, 11.5rem);
-  --text-display-l: clamp(2.5rem, 7vw, 6rem);
-  --text-display-m: clamp(1.875rem, 4vw, 3.25rem);
-  --text-quote: clamp(1.25rem, 2.4vw, 2rem);
+  --text-display-xl: clamp(2.75rem, 8.4vw, 8.5rem);
+  --text-display-l: clamp(2.25rem, 5.4vw, 4.75rem);
+  --text-display-m: clamp(1.625rem, 3.2vw, 2.75rem);
+  --text-lede: clamp(1.0625rem, 1.6vw, 1.375rem);
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
@@ -45,51 +39,23 @@
 
 @layer base {
   html {
-    /* Lenis drives scrolling; native smooth-scroll would fight it. */
+    /* Lenis owns scrolling; native smooth-scroll would fight it. */
     scroll-behavior: auto;
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
   }
 
   body {
-    background-color: var(--color-ink);
-    color: var(--color-on-ink);
+    background-color: var(--color-bg);
+    color: var(--color-fg);
     font-family: var(--font-sans);
-    font-synthesis-weight: none;
     overscroll-behavior-y: none;
   }
 
-  /* Display type: narrows optically as it grows, sits at 500-600 rather than
-     800. The boldness budget is spent on the 3D, not the headlines. */
-  .type-display {
-    font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    line-height: 0.92;
-    font-variation-settings: "wdth" 88;
-  }
-
-  .type-mono {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.06em;
-    font-variant-numeric: tabular-nums;
-  }
-
   ::selection {
-    background: var(--color-brass);
-    color: var(--color-ink);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
-  /* Visible focus everywhere, including over the canvas. Never removed. */
-  :focus-visible {
-    outline: 2px solid var(--color-brass);
-    outline-offset: 3px;
-    border-radius: 1px;
-  }
-
-  /* The real cursor is hidden only where the custom one can actually follow,
-     and only on devices that have a hovering pointer. */
   @media (hover: hover) and (pointer: fine) {
     html.has-custom-cursor,
     html.has-custom-cursor a,
@@ -99,60 +65,83 @@
   }
 }
 
-/* Horizontal page padding. The extra right inset from lg up reserves the
-   margin the section index occupies, so copy never runs under it. */
+/* Display type: tight, confident, never shouting in caps. */
+@utility type-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+}
+
+@utility type-mono {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Glass surface. Blur is used to lift a panel off the field, never as
+   decoration on things that are not panels. */
+@utility glass {
+  background: var(--color-glass);
+  border: 1px solid var(--color-hairline);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
 @utility page-x {
-  padding-inline: 1.5rem;
+  padding-inline: 1.25rem;
 
   @media (width >= 48rem) {
     padding-inline: 2.5rem;
   }
 
   @media (width >= 64rem) {
-    padding-left: 2.5rem;
+    padding-left: 3.5rem;
     padding-right: 7rem;
   }
 }
 
-/* Rules carry current: --charge is published by the scroll loop, so the whole
-   drawing warms toward brass the faster you move. */
+/* Hairlines carry current: --charge is published by the scroll loop, so the
+   whole field warms toward the signal colour the faster you move. */
 @utility rule-t {
   border-top: 1px solid
-    color-mix(
-      in oklab,
-      var(--color-brass) calc(var(--charge, 0) * 55%),
-      var(--color-rule-dark)
-    );
+    color-mix(in oklab, var(--color-glow) calc(var(--charge, 0) * 60%), var(--color-hairline));
 }
 
 @utility rule-b {
   border-bottom: 1px solid
-    color-mix(
-      in oklab,
-      var(--color-brass) calc(var(--charge, 0) * 55%),
-      var(--color-rule-dark)
-    );
+    color-mix(in oklab, var(--color-glow) calc(var(--charge, 0) * 60%), var(--color-hairline));
 }
 
-/* Chapters that invert to Bone re-point the rule tokens rather than
-   overriding every border utility individually. */
-@utility chapter-light {
-  background-color: var(--color-bone);
-  color: var(--color-on-bone);
-  --color-rule-dark: var(--color-rule-light);
-  --color-muted-fg: var(--color-bone-mute);
+/* Text that carries the signal colour without dropping below 4.5:1. */
+@utility text-signal {
+  color: var(--color-accent-fg);
 }
 
-/* The engineering-drawing grid: content hangs off a left rule with the
-   section index living in the gutter. */
-@utility drawing-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem 2rem;
+/* Deliberately UNLAYERED. Tailwind's utilities layer outranks @layer base, so
+   a focus ring defined there can be silently zeroed out by a utility class.
+   Focus indicators are not negotiable, so this rule sits above every layer. */
+:focus-visible {
+  outline: 2px solid var(--color-accent-fg);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
 
-  @media (width >= 48rem) {
-    grid-template-columns: 4.5rem repeat(12, minmax(0, 1fr));
-  }
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+
+@theme inline {
+  --animate-accordion-down: accordion-down 0.35s var(--ease-out-expo);
+  --animate-accordion-up: accordion-up 0.28s var(--ease-out-expo);
 }
 
 @media (prefers-reduced-motion: reduce) {

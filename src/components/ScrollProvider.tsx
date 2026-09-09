@@ -8,14 +8,14 @@ import { useEffect } from "react";
 import { flux, lenisRef, useUI } from "@/lib/store";
 
 /**
- * Lenis drives the scroll; GSAP's ticker drives Lenis; ScrollTrigger updates
- * off Lenis. One clock, so nothing drifts against anything else.
+ * Lenis is the spine of this site.
  *
- * The whole journey (hero -> projects) is a single ScrollTrigger. Chapters are
- * points along it rather than separate triggers, which is why the construct
- * morphs continuously instead of popping between states.
+ * It owns the scroll position, drives GSAP's ticker, feeds ScrollTrigger,
+ * handles every in-page anchor with its own easing, and publishes velocity to
+ * both the 3D layer and CSS. One scroller, one clock — nothing drifts against
+ * anything else.
  */
-export function SmoothScroll({ reducedMotion }: { reducedMotion: boolean }) {
+export function ScrollProvider({ reducedMotion }: { reducedMotion: boolean }) {
   const setActiveChapter = useUI((s) => s.setActiveChapter);
 
   useEffect(() => {
@@ -33,26 +33,25 @@ export function SmoothScroll({ reducedMotion }: { reducedMotion: boolean }) {
 
     if (!reducedMotion) {
       lenis = new Lenis({
-        lerp: 0.085,
+        // Low lerp = long glide. This is the single value that most decides
+        // whether the site feels expensive or cheap.
+        lerp: 0.075,
         wheelMultiplier: 1,
         smoothWheel: true,
-        // Touch devices already have native inertia; doubling it feels laggy.
+        // Touch devices have their own inertia; doubling it feels laggy.
         syncTouch: false,
       });
+      lenisRef.current = lenis;
 
-      lenis.on("scroll", (e: { velocity: number }) => {
+      lenis.on("scroll", (e: { velocity: number; progress: number }) => {
         ScrollTrigger.update();
         // ~40px/frame is a hard flick; normalise against that.
         flux.velocity = gsap.utils.clamp(-1, 1, e.velocity / 40);
       });
 
-      lenisRef.current = lenis;
-
       const tick = (time: number) => lenis?.raf(time * 1000);
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
-
-      // ScrollTrigger must measure after Lenis is in control.
       ScrollTrigger.refresh();
 
       cleanupTicker = () => gsap.ticker.remove(tick);
@@ -62,6 +61,35 @@ export function SmoothScroll({ reducedMotion }: { reducedMotion: boolean }) {
       cleanupTicker = () =>
         window.removeEventListener("scroll", onScrollNative);
     }
+
+    // --- every in-page anchor goes through Lenis ------------------------
+    const onAnchorClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey) return;
+      const anchor = (event.target as HTMLElement | null)?.closest?.(
+        'a[href^="#"]',
+      ) as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const id = anchor.getAttribute("href");
+      if (!id || id === "#") return;
+      const target = document.querySelector(id);
+      if (!target) return;
+
+      event.preventDefault();
+      if (lenis) {
+        lenis.scrollTo(target as HTMLElement, {
+          offset: -8,
+          duration: 1.5,
+          easing: (t: number) => 1 - Math.pow(1 - t, 4),
+        });
+      } else {
+        (target as HTMLElement).scrollIntoView();
+      }
+      // Keyboard users must land on the section, not just see it move.
+      (target as HTMLElement).setAttribute("tabindex", "-1");
+      (target as HTMLElement).focus({ preventScroll: true });
+    };
+    document.addEventListener("click", onAnchorClick);
 
     // --- the journey timeline -------------------------------------------
     const journey = document.querySelector("#journey");
@@ -85,19 +113,14 @@ export function SmoothScroll({ reducedMotion }: { reducedMotion: boolean }) {
     window.addEventListener("pointermove", onPointer, { passive: true });
 
     const loop = () => {
-      // Smoothing the pointer here (not in useFrame) means the custom cursor
-      // and the 3D read the exact same value.
       flux.pointer.x += (flux.pointerRaw.x - flux.pointer.x) * 0.08;
       flux.pointer.y += (flux.pointerRaw.y - flux.pointer.y) * 0.08;
       flux.velocity *= 0.92;
       flux.energy += (Math.abs(flux.velocity) - flux.energy) * 0.09;
-      // Chapter chases its target rather than being written directly, so the
-      // construct keeps momentum through a section boundary.
       flux.chapter += (flux.chapterTarget - flux.chapter) * 0.075;
 
-      // Publish scroll energy to CSS so the drawing's hairlines carry current
-      // when you move. Only written when it actually changes, to keep style
-      // recalculation off the hot path.
+      // Publish to CSS, but only when it actually changes — this var is read
+      // by every hairline on the page.
       const charge = Math.round(flux.energy * 50) / 50;
       if (charge !== lastCharge) {
         lastCharge = charge;
@@ -107,12 +130,12 @@ export function SmoothScroll({ reducedMotion }: { reducedMotion: boolean }) {
     };
     rafId = requestAnimationFrame(loop);
 
-    // Fonts change layout height; re-measure once they land.
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
     return () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener("pointermove", onPointer);
+      document.removeEventListener("click", onAnchorClick);
       cleanupTicker();
       trigger?.kill();
       lenisRef.current = null;

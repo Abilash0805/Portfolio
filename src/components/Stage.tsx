@@ -1,8 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 
-import { SmoothScroll } from "@/components/SmoothScroll";
+import { ScrollProvider } from "@/components/ScrollProvider";
 import { Cursor } from "@/components/ui/Cursor";
 import { Preloader } from "@/components/ui/Preloader";
 import { useEnv } from "@/lib/useEnv";
@@ -26,7 +27,7 @@ function StaticConstruct() {
         className="max-w-[70vw] opacity-45"
         aria-hidden
       >
-        <g fill="none" stroke="var(--color-brass)" strokeWidth="0.75">
+        <g fill="none" stroke="var(--color-glow)" strokeWidth="0.75">
           <rect x="-62" y="-62" width="124" height="124" opacity=".55" />
           <rect
             x="-62"
@@ -38,7 +39,7 @@ function StaticConstruct() {
           />
           <circle r="88" opacity=".22" />
         </g>
-        <g fill="var(--color-brass)">
+        <g fill="var(--color-accent-fg)">
           {[
             [-62, -62], [62, -62], [62, 62], [-62, 62],
             [0, -88], [88, 0], [0, 88], [-88, 0],
@@ -53,6 +54,22 @@ function StaticConstruct() {
 
 export function Stage() {
   const env = useEnv();
+  const [canvasReady, setCanvasReady] = useState(false);
+
+  // Mounting the canvas immediately blocks the first paint: WebGL context
+  // creation and shader compilation run on the main thread, and on a slow GPU
+  // that delayed first paint by ~700ms. Wait for a painted frame first, then
+  // bring the field in.
+  useEffect(() => {
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setCanvasReady(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, []);
 
   // Nothing renders until the environment is known, so the first paint is
   // never the wrong version.
@@ -60,7 +77,7 @@ export function Stage() {
 
   return (
     <>
-      <SmoothScroll reducedMotion={env.reducedMotion} />
+      <ScrollProvider reducedMotion={env.reducedMotion} />
       {!env.reducedMotion && <Cursor />}
 
       <div
@@ -68,7 +85,11 @@ export function Stage() {
         className="pointer-events-none fixed inset-0 z-0"
         // The construct is decoration; every fact it carries is also in the DOM.
       >
-        {env.reducedMotion ? <StaticConstruct /> : <SceneRoot tier={env.tier} />}
+        {env.reducedMotion ? (
+          <StaticConstruct />
+        ) : canvasReady ? (
+          <SceneRoot tier={env.tier} />
+        ) : null}
       </div>
 
       <Preloader />

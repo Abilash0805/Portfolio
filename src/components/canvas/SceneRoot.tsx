@@ -16,6 +16,7 @@ import * as THREE from "three";
 import { flux } from "@/lib/store";
 import type { Tier } from "@/lib/useEnv";
 import { Assembly } from "./Assembly";
+import { Starfield } from "./Starfield";
 
 /**
  * The camera does not cut between sections — it travels one continuous spline
@@ -96,7 +97,7 @@ function ReactiveEffects({ tier }: { tier: Tier }) {
     // One cheap pass only — scroll smoothness outranks fidelity here.
     return (
       <EffectComposer>
-        <Bloom intensity={0.5} luminanceThreshold={0.55} mipmapBlur />
+        <Bloom intensity={0.7} luminanceThreshold={0.4} mipmapBlur />
       </EffectComposer>
     );
   }
@@ -104,9 +105,9 @@ function ReactiveEffects({ tier }: { tier: Tier }) {
   return (
     <EffectComposer multisampling={0}>
       <Bloom
-        intensity={0.62}
-        luminanceThreshold={0.52}
-        luminanceSmoothing={0.25}
+        intensity={0.95}
+        luminanceThreshold={0.34}
+        luminanceSmoothing={0.3}
         mipmapBlur
       />
       <ChromaticAberration
@@ -116,7 +117,7 @@ function ReactiveEffects({ tier }: { tier: Tier }) {
         modulationOffset={0}
       />
       <Noise opacity={0.035} blendFunction={BlendFunction.OVERLAY} />
-      <Vignette offset={0.28} darkness={0.62} blendFunction={BlendFunction.NORMAL} />
+      <Vignette offset={0.22} darkness={0.7} blendFunction={BlendFunction.NORMAL} />
     </EffectComposer>
   );
 }
@@ -136,10 +137,12 @@ export default function SceneRoot({ tier }: { tier: Tier }) {
       <Suspense fallback={null}>
         <CameraRig />
 
-        <ambientLight intensity={0.22} />
-        <directionalLight position={[4, 6, 5]} intensity={1.5} color="#dfe6f2" />
-        <pointLight position={[-5, -2, 3]} intensity={12} color="#e9a93c" distance={18} />
-        <pointLight position={[5, 3, -4]} intensity={14} color="#8fb6ff" distance={20} />
+        <ambientLight intensity={0.16} />
+        <directionalLight position={[4, 6, 5]} intensity={1.2} color="#cfe0ff" />
+        {/* Two rims in tension: cold signal blue against a near-white key, so
+            the chrome reads as metal rather than as a blue-tinted surface. */}
+        <pointLight position={[-6, -2, 3]} intensity={26} color="#2563eb" distance={22} />
+        <pointLight position={[5, 3, -4]} intensity={18} color="#7dd3fc" distance={22} />
 
         {/* Reflections are generated locally from lightformers. No HDR is
             fetched at runtime, so the metal reads correctly offline and the
@@ -154,8 +157,8 @@ export default function SceneRoot({ tier }: { tier: Tier }) {
           />
           <Lightformer
             form="rect"
-            intensity={0.85}
-            color="#e9a93c"
+            intensity={1.5}
+            color="#3b82f6"
             position={[-5, -1, 2]}
             scale={[6, 6, 1]}
             rotation={[0, Math.PI / 2, 0]}
@@ -163,13 +166,14 @@ export default function SceneRoot({ tier }: { tier: Tier }) {
           <Lightformer
             form="circle"
             intensity={1.1}
-            color="#9ec1ff"
+            color="#dbeafe"
             position={[5, 2, 2]}
             scale={[4, 4, 1]}
             rotation={[0, -Math.PI / 2, 0]}
           />
         </Environment>
 
+        <Starfield count={tier === "high" ? 1200 : 450} />
         <Assembly tier={tier} />
         <ReactiveEffects tier={tier} />
       </Suspense>

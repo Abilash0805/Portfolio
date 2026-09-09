@@ -77,7 +77,7 @@ export function Preloader() {
     <AnimatePresence>
       {!done && (
         <motion.div
-          className="fixed inset-0 z-100 flex flex-col justify-between bg-ink px-6 py-8 md:px-10 md:py-10"
+          className="fixed inset-0 z-100 flex flex-col justify-between bg-bg px-6 py-8 md:px-10 md:py-10"
           initial={{ opacity: 1 }}
           exit={
             reduced
@@ -94,11 +94,11 @@ export function Preloader() {
           aria-live="polite"
           aria-label={`Loading, ${pct} percent`}
         >
-          <div className="type-mono text-mist">Abilash V</div>
+          <div className="type-mono text-muted">Abilash V</div>
 
           <div>
             <div className="flex items-end justify-between gap-6">
-              <span className="type-mono text-mist">Assembling</span>
+              <span className="type-mono text-muted">Assembling</span>
               <span
                 className="type-display tabular-nums text-[clamp(3.5rem,12vw,9rem)] leading-none"
                 style={{ fontVariantNumeric: "tabular-nums" }}
@@ -106,9 +106,9 @@ export function Preloader() {
                 {String(pct).padStart(2, "0")}
               </span>
             </div>
-            <div className="mt-6 h-px w-full bg-on-ink/15">
+            <div className="mt-6 h-px w-full bg-hairline">
               <motion.div
-                className="h-full bg-brass"
+                className="h-full bg-accent"
                 style={{ transformOrigin: "left" }}
                 animate={{ scaleX: shown }}
                 initial={{ scaleX: 0 }}

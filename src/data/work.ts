@@ -35,7 +35,7 @@ export const PROJECTS: Project[] = [
       { label: "Stack", value: "Next.js, Vercel, Firebase, Adobe suite" },
       { label: "Status", value: "Live and taking clients" },
     ],
-    image: "/work/orixen.png",
+    image: "/work/orixen.jpg",
     alt: "The Orixen Digital website home page",
     links: [
       { label: "orixendigital.vercel.app", href: "https://orixendigital.vercel.app" },

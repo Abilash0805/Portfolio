@@ -245,7 +245,7 @@ export function Assembly({ tier }: { tier: "high" | "low" }) {
     const wide = state.size.width / state.size.height > 1.15;
     group.position.x = THREE.MathUtils.lerp(
       group.position.x,
-      wide ? 1.25 : 0,
+      wide ? 1.75 : 0,
       dt * 2.5,
     );
     group.position.y = THREE.MathUtils.lerp(

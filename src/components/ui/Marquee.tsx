@@ -48,10 +48,10 @@ export function Marquee({ items }: { items: string[] }) {
   const run = (copy: number) =>
     items.map((item) => (
       <span key={`${copy}-${item}`} className="flex shrink-0 items-center">
-        <span className="type-display px-8 text-[clamp(1.5rem,3.4vw,2.75rem)] whitespace-nowrap text-on-ink/85 md:px-12">
+        <span className="type-display px-8 text-[clamp(1.5rem,3.4vw,2.75rem)] whitespace-nowrap text-fg/80 md:px-12">
           {item}
         </span>
-        <span aria-hidden className="h-8 w-px shrink-0 bg-brass/45" />
+        <span aria-hidden className="h-8 w-px shrink-0 bg-glow/60" />
       </span>
     ));
 

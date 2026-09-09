@@ -1,78 +1,91 @@
 "use client";
 
+import { ArrowUpRight } from "lucide-react";
 import { useRef } from "react";
 
-import { GutterIndex } from "@/components/ui/Drawing";
-import { RevealText, Rise } from "@/components/ui/RevealText";
-import { CONTACT_LINKS } from "@/data/work";
+import { Button } from "@/components/ui/button";
+import { Rise } from "@/components/ui/RevealText";
+import { SectionHead } from "@/components/ui/SectionHead";
+import { CONTACT_LINKS, PHONE_HREF } from "@/data/work";
 import { useChapterRange } from "@/lib/useChapterRange";
 
 export function Contact() {
   const ref = useRef<HTMLElement>(null);
   useChapterRange(ref, 3, 3, { start: "top 80%", end: "bottom bottom" });
 
-  const links = CONTACT_LINKS;
-
   return (
     <section
       ref={ref}
       id="contact"
-      className="relative z-10 page-x overflow-hidden py-32 md:py-48"
+      className="relative z-10 overflow-hidden page-x py-28 md:py-40"
     >
-      {/* The construct returns for the closing chapter. The copy sits left of
-          it, and this keeps the overlap zone readable without dimming the
-          construct into mush. */}
+      {/* The climax: the field is at its brightest here. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-transparent"
+        className="pointer-events-none absolute inset-0 [background:radial-gradient(65%_60%_at_50%_100%,color-mix(in_oklab,var(--color-glow)_16%,transparent),transparent_72%)]"
       />
 
-      <div className="drawing-grid relative mx-auto max-w-[88rem]">
-        <GutterIndex n="04" label="Contact" />
+      <div className="relative mx-auto max-w-[80rem]">
+        <SectionHead index="04" label="Contact" />
 
-        <div className="md:col-span-7 md:col-start-3">
-          <h2 className="type-display text-display-l">
-            <RevealText as="span" stagger={0.045}>
+        <div className="mt-12 grid gap-14 md:grid-cols-12 md:gap-16">
+          <div className="md:col-span-6">
+            <h2 className="type-display max-w-[16ch] text-display-l">
               Got something that needs building?
-            </RevealText>
-          </h2>
-          <Rise delay={0.15}>
-            <p className="mt-8 max-w-[42ch] text-[1.0625rem] leading-[1.65] text-on-ink/72">
-              Client work runs through Orixen Digital — sites, brand, video,
-              or the whole set. For anything else, a collaboration, a
-              competition build, or a question about how something here was
-              made, just say so.
-            </p>
-          </Rise>
-        </div>
+            </h2>
+            <Rise delay={0.1}>
+              <p className="mt-8 max-w-[44ch] text-lede leading-[1.55] text-muted">
+                Client work runs through Orixen Digital — sites, brand, video,
+                or the whole set. For anything else, a collaboration, a
+                competition build, or a question about how something here was
+                made, just say so.
+              </p>
+              <div className="mt-10 flex flex-wrap gap-3">
+                <Button asChild size="lg" data-magnetic>
+                  <a href={PHONE_HREF}>Call me</a>
+                </Button>
+                <Button asChild size="lg" variant="glass" data-magnetic>
+                  <a
+                    href="https://instagram.com/orixen_digital.in"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Message the studio
+                  </a>
+                </Button>
+              </div>
+            </Rise>
+          </div>
 
-        {/* Links sit under the copy on the left so the construct owns the
-            right half outright, instead of being veiled into mush. */}
-        <div className="md:col-span-5 md:col-start-3 md:row-start-2">
-          <ul className="mt-14 md:mt-12">
-            {links.map((link) => (
+          {/* Left half: the construct owns the right, so nothing sits on it. */}
+          <ul className="md:col-span-6 md:col-start-1">
+            {CONTACT_LINKS.map((link) => (
               <li key={link.href} className="rule-t">
                 <a
                   href={link.href}
                   target={link.href.startsWith("http") ? "_blank" : undefined}
                   rel="noopener noreferrer"
                   data-magnetic
-                  className="group flex items-baseline justify-between gap-6 py-5"
+                  className="group flex items-center justify-between gap-6 py-5"
                 >
-                  <span className="type-mono text-mist">{link.label}</span>
-                  <span className="text-[1rem] text-on-ink transition-colors duration-200 group-hover:text-brass">
+                  <span className="type-mono text-muted">{link.label}</span>
+                  <span className="flex items-center gap-2 text-[0.9375rem] text-fg transition-colors duration-300 group-hover:text-signal">
                     {link.value}
+                    <ArrowUpRight
+                      aria-hidden
+                      className="size-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    />
                   </span>
                 </a>
               </li>
             ))}
           </ul>
         </div>
-      </div>
 
-      <div className="relative mx-auto mt-32 flex max-w-[88rem] items-end justify-between gap-6 md:mt-48">
-        <span className="type-mono text-mist">Abilash V</span>
-        <span className="type-mono text-mist">Built from scratch, 2026</span>
+        <div className="rule-t mt-24 flex flex-wrap items-end justify-between gap-4 pt-8 md:mt-32">
+          <span className="type-mono text-muted">Abilash V</span>
+          <span className="type-mono text-muted">Built from scratch, 2026</span>
+        </div>
       </div>
     </section>
   );

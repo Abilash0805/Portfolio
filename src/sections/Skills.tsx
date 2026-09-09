@@ -3,7 +3,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useRef } from "react";
 
-import { GutterIndex } from "@/components/ui/Drawing";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { SectionHead } from "@/components/ui/SectionHead";
 import { SKILLS } from "@/data/work";
 import { useUI } from "@/lib/store";
 import { useChapterRange } from "@/lib/useChapterRange";
@@ -13,9 +19,8 @@ import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
  * Two presentations, chosen in CSS so there is no hydration branch.
  *
  * Desktop pins the panel and swaps one category at a time, which is what
- * drives the construct through its three working formations. On a phone that
- * would mean 300vh of pinned scroll to read nine words, so small screens get
- * the whole list stacked and readable instead.
+ * drives the construct through its three working formations. A phone gets an
+ * accordion instead — 300vh of pinned scroll to read nine words is hostile.
  */
 export function Skills() {
   const ref = useRef<HTMLElement>(null);
@@ -27,8 +32,7 @@ export function Skills() {
     start: "top top",
     end: "bottom bottom",
     onProgress: (p) => {
-      const index = Math.min(SKILLS.length - 1, Math.floor(p * SKILLS.length));
-      setActiveSkill(index);
+      setActiveSkill(Math.min(SKILLS.length - 1, Math.floor(p * SKILLS.length)));
     },
   });
 
@@ -36,68 +40,76 @@ export function Skills() {
 
   return (
     <section ref={ref} id="skills" className="relative z-10">
-      {/* ---- small screens: everything stacked, nothing pinned ---- */}
+      {/* ---- phones: an accordion, nothing pinned ---- */}
       <div className="relative page-x py-24 md:hidden">
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-ink/82" />
-        <div className="relative">
-          <div className="mb-10 flex items-baseline gap-3">
-            <span className="type-mono text-brass">02</span>
-            <span className="type-mono text-mist">Skills</span>
-          </div>
-
-          {SKILLS.map((s) => (
-            <div key={s.id} className="rule-t py-8">
-              <div className="flex items-baseline gap-4">
-                <span className="type-mono text-brass">{s.index}</span>
-                <h3 className="type-display text-display-m">{s.title}</h3>
-              </div>
-              <p className="mt-4 text-[1rem] leading-[1.6] text-on-ink/75">
-                {s.line}
-              </p>
-              <ul className="mt-6 grid grid-cols-2 gap-x-6">
-                {s.items.map((item) => (
-                  <li
-                    key={item}
-                    className="rule-t py-2.5 text-[0.875rem] text-on-ink/85"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-bg/85" />
+        <div className="relative mx-auto max-w-[80rem]">
+          <SectionHead index="02" label="Skills" />
+          <h2 className="type-display mt-8 text-display-m">
+            Three practices, one workflow.
+          </h2>
+          <Accordion type="single" collapsible defaultValue={SKILLS[0].id} className="mt-6">
+            {SKILLS.map((s) => (
+              <AccordionItem key={s.id} value={s.id}>
+                <AccordionTrigger>
+                  <span className="flex items-baseline gap-4">
+                    <span className="type-mono text-signal">{s.index}</span>
+                    <span className="type-display text-[1.5rem]">{s.title}</span>
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-[0.9375rem] leading-[1.65] text-muted">
+                    {s.line}
+                  </p>
+                  <ul className="mt-6 flex flex-wrap gap-2">
+                    {s.items.map((item) => (
+                      <li
+                        key={item}
+                        className="glass rounded-full px-3.5 py-1.5 text-[0.8125rem] text-fg/85"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </div>
 
       {/* ---- md and up: pinned, one category at a time ---- */}
       <div className="hidden md:block md:h-[300vh]">
         <div className="sticky top-0 flex h-svh items-center overflow-hidden page-x">
-          {/* The copy sits on both sides of the construct here, so it needs a
-              full-bleed veil, not a one-sided gradient. */}
-          <div aria-hidden className="pointer-events-none absolute inset-0 bg-ink/78" />
+          <div aria-hidden className="pointer-events-none absolute inset-0 bg-bg/72" />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink via-transparent to-ink/90"
+            className="pointer-events-none absolute inset-0 [background:radial-gradient(60%_60%_at_75%_50%,color-mix(in_oklab,var(--color-glow)_9%,transparent),transparent_70%)]"
           />
 
-          <div className="drawing-grid relative mx-auto w-full max-w-[88rem]">
-            <GutterIndex n="02" label="Skills" />
+          <div className="relative mx-auto w-full max-w-[80rem]">
+            <SectionHead index="02" label="Skills" />
+            <h2 className="type-display mt-8 max-w-[20ch] text-display-m">
+              Three practices, one workflow.
+            </h2>
 
-            <div className="md:col-span-5 md:col-start-3">
-              <ul>
+            <div className="mt-12 grid gap-16 md:grid-cols-12">
+              <ul className="md:col-span-6">
                 {SKILLS.map((s, i) => (
                   <li key={s.id} className="rule-t">
                     <button
                       type="button"
                       onClick={() => setActiveSkill(i)}
                       aria-current={i === active}
-                      className="flex w-full items-baseline gap-5 py-5 text-left transition-opacity duration-300 md:py-7"
-                      style={{ opacity: i === active ? 1 : 0.34 }}
+                      className="flex w-full items-baseline gap-5 py-7 text-left transition-opacity duration-300"
+                      style={{ opacity: i === active ? 1 : 0.32 }}
                     >
                       <span
                         className="type-mono shrink-0"
                         style={{
-                          color: i === active ? "var(--color-brass)" : "inherit",
+                          color: i === active
+                            ? "var(--color-accent-fg)"
+                            : "inherit",
                         }}
                       >
                         {s.index}
@@ -107,32 +119,32 @@ export function Skills() {
                   </li>
                 ))}
               </ul>
-            </div>
 
-            <div className="md:col-span-5 md:col-start-9">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={group.id}
-                  initial={reduced ? false : { opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reduced ? undefined : { opacity: 0, y: -10 }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <p className="max-w-[34ch] text-[1.0625rem] leading-[1.6] text-on-ink/75">
-                    {group.line}
-                  </p>
-                  <ul className="mt-9 grid grid-cols-2 gap-x-8">
-                    {group.items.map((item) => (
-                      <li
-                        key={item}
-                        className="rule-t py-3 text-[0.9375rem] text-on-ink/85"
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              </AnimatePresence>
+              <div className="md:col-span-5 md:col-start-8">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={group.id}
+                    initial={reduced ? false : { opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={reduced ? undefined : { opacity: 0, y: -10 }}
+                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <p className="max-w-[34ch] text-[1.0625rem] leading-[1.65] text-muted">
+                      {group.line}
+                    </p>
+                    <ul className="mt-9 flex flex-wrap gap-2.5">
+                      {group.items.map((item) => (
+                        <li
+                          key={item}
+                          className="glass rounded-full px-4 py-2 text-[0.875rem] text-fg/85"
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>

@@ -1,13 +1,14 @@
 import { launch } from "./lib-browser.mjs";
 const browser = await launch({ args: ["--enable-unsafe-swiftshader", "--use-angle=swiftshader"] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-await page.goto("http://127.0.0.1:3777", { waitUntil: "load" });
+await page.goto("http://127.0.0.1:4888", { waitUntil: "load" });
 await page.waitForTimeout(6000);
 
 // Walk the tab order and report what receives focus and whether it is visible.
 const seen = [];
 for (let i = 0; i < 12; i++) {
   await page.keyboard.press("Tab");
+  await page.waitForTimeout(120); // let any transition settle before measuring
   const info = await page.evaluate(() => {
     const el = document.activeElement;
     if (!el || el === document.body) return null;

@@ -6,7 +6,7 @@ competition deadlines.
 
 ## Before this goes live
 
-1. **The Orixen preview image.** `public/work/orixen.png` is a *designed
+1. **The Orixen preview image.** `public/work/orixen.jpg` is a *designed
    composition built from the real site's identity* — navy space ground,
    electric blue, the ORIXEN DIGITAL lockup and the live service list. It is
    not a screenshot; the sandbox this was built in could not reach
@@ -21,33 +21,39 @@ them any time with `node scripts/build-visuals.mjs`.
 
 ## Stack
 
-Next.js 16 (App Router) · TypeScript · Tailwind v4 · React Three Fiber +
-drei + three · @react-three/postprocessing · GSAP ScrollTrigger · Lenis ·
-Framer Motion.
+Next.js 16 (App Router), TypeScript, Tailwind v4, shadcn-convention components
+on Radix, React Three Fiber + drei + three, @react-three/postprocessing,
+Lenis, GSAP ScrollTrigger, Framer Motion.
 
-## Design system
+## Design system — "Deep Field" 
 
 | Token | Hex | Role |
 | --- | --- | --- |
-| Ink | `#0A0C10` | Ground for the WebGL chapters |
-| Graphite | `#151920` | Raised surface, hairlines |
-| Bone | `#E6E7E2` | Ground for the reading chapters |
-| Brass | `#E9A93C` | The one warm signal — solder, amber CRT |
-| Oxide | `#8C5A2B` | Deep brass, for accent text on Bone |
-| Mist | `#9AA1AC` | Secondary text on Ink |
+| bg | `#05070E` | Deep-space ground |
+| fg | `#EEF2F8` | Body text (17.9:1) |
+| muted | `#8A96AD` | Secondary text (6.8:1) |
+| accent | `#2563EB` | Fills — white text on it clears 5.17:1 |
+| accent-fg | `#60A5FA` | Accent **text** on the dark ground (7.9:1) |
+| glow | `#3B82F6` | Glows, borders, charged hairlines |
 
-One warm accent against a cool neutral ramp. The second "accent" is not a
-hue — it is the Ink → Bone inversion between chapters, which is what lets the
-3D recede after the hero instead of shouting through every section.
+One electric-blue signal on a cool neutral ramp. Chapters do not invert — they
+gain intensity, which is the "progressive reveal" the scroll pattern calls for.
+The fill and the text accent are deliberately different values: `#2563EB` is
+too dark to read as text on the ground, `#60A5FA` too light to carry white.
 
-Type is two families in three roles: **Bricolage Grotesque** for display
-(width axis loaded, so it narrows as it scales), **Geist** for body and
-**Geist Mono** for every technical string.
+Type is three roles: **Sora** for display, **Inter** for body, **JetBrains
+Mono** for every technical string. Surfaces are glass — `backdrop-filter` used
+to lift a panel off the field, never as decoration on things that are not
+panels.
 
-Layout is an engineering drawing: a 12-column grid, hairline rules, section
-indices as gutter callouts, and datasheet spec tables. No cards, no
-tracked-out caps eyebrows, no arrow-suffixed links, no middle-dot meta
-strings.
+## Components
+
+`components.json`, `src/lib/utils.ts` and `src/components/ui/{button,badge,
+separator,accordion,dialog}.tsx` follow shadcn's conventions and dependency set
+(Radix + CVA + tailwind-merge), so `npx shadcn@latest add <name>` drops new
+components straight in. They were hand-written rather than generated because
+`ui.shadcn.com` is unreachable from the sandbox this was built in — the CLI's
+`init` and `add` both need that registry.
 
 ## The 3D: "The Assembly"
 
@@ -79,11 +85,18 @@ changes character with what you are reading.
 
 ## Scroll
 
-Lenis drives GSAP's ticker, GSAP drives ScrollTrigger — one clock, nothing
-drifts. Sections claim *disjoint* chapter ranges and write a target the
-construct chases, which is why overlapping triggers cannot fight each other.
-Skills is pinned with `position: sticky` rather than a GSAP pin, so there is
-no pin-spacer to fight Lenis and it survives a resize without a refresh.
+Lenis is the spine. It owns the scroll position, drives GSAP's ticker, feeds
+ScrollTrigger, intercepts **every** in-page anchor so navigation eases rather
+than jumps (and moves focus to the target for keyboard users), and publishes
+velocity to both the 3D layer and CSS. One scroller, one clock.
+
+`lerp: 0.075` is the single value that most decides whether the site feels
+expensive or cheap.
+
+Sections claim *disjoint* chapter ranges and write a target the construct
+chases, which is why overlapping triggers cannot fight each other. Skills is
+pinned with `position: sticky` rather than a GSAP pin, so there is no
+pin-spacer to fight Lenis and it survives a resize without a refresh.
 
 ## Navigation
 
@@ -107,7 +120,14 @@ wheel-driven smooth scroller keeps going otherwise.
 - Full keyboard route through every section with visible focus rings, real
   semantic headings, and all content in the DOM — the canvas is decoration
   and carries no information of its own.
-- Measured on the production build: FCP/LCP ~316 ms, CLS 0.
+- Focus indicators are defined **unlayered**. Tailwind's utilities layer
+  outranks `@layer base`, so a focus ring defined there gets silently zeroed
+  by a utility; and `transition-all` animates `outline-width`, fading the ring
+  in over 300ms. Both were real bugs here.
+- Measured: the no-WebGL path is FCP ~212 ms, CLS 0. The WebGL path cannot be
+  measured meaningfully in the build sandbox — it has no GPU, so SwiftShader
+  software rendering dominates the number (it swung 300–1900 ms across runs).
+  Measure it on real hardware before trusting a figure.
 
 ## Commands
 

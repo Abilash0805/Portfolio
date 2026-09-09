@@ -117,11 +117,11 @@ export function Cursor() {
     <div aria-hidden className="pointer-events-none fixed inset-0 z-[90] hidden md:block">
       <div
         ref={ring}
-        className="absolute top-0 left-0 h-8 w-8 rounded-full border border-brass/70 transition-opacity duration-300"
+        className="absolute top-0 left-0 h-8 w-8 rounded-full border border-accent-fg/70 transition-opacity duration-300"
       />
       <div
         ref={dot}
-        className="absolute top-0 left-0 h-1 w-1 rounded-full bg-brass transition-opacity duration-300"
+        className="absolute top-0 left-0 h-1 w-1 rounded-full bg-accent transition-opacity duration-300"
       />
     </div>
   );

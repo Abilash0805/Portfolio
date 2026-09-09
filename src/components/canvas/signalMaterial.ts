@@ -14,7 +14,7 @@ export type SignalUniforms = {
   uEnergy: { value: number };
 };
 
-const BRASS = new THREE.Color("#e9a93c");
+const SIGNAL = new THREE.Color("#5b9dff");
 
 /**
  * PBR body with the pulse injected into emissive. Built on MeshStandardMaterial
@@ -28,16 +28,18 @@ export function createPartsMaterial(): {
   const uniforms: SignalUniforms = { uTime: { value: 0 }, uEnergy: { value: 0 } };
 
   const material = new THREE.MeshStandardMaterial({
-    color: "#14171d",
-    roughness: 0.44,
-    metalness: 0.78,
-    envMapIntensity: 0.75,
+    // Dark chrome: reads as machined metal in a blue field rather than as
+    // painted plastic.
+    color: "#0d1424",
+    roughness: 0.28,
+    metalness: 0.94,
+    envMapIntensity: 1.35,
   });
 
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = uniforms.uTime;
     shader.uniforms.uEnergy = uniforms.uEnergy;
-    shader.uniforms.uPulse = { value: BRASS };
+    shader.uniforms.uPulse = { value: SIGNAL };
 
     shader.vertexShader = shader.vertexShader
       .replace(
@@ -75,13 +77,13 @@ export function createPartsMaterial(): {
          d = min(d, 1.0 - d);                       // wrap the pulse
          float pulse = smoothstep(0.17, 0.0, d);
          // A faint always-on bias keeps the metal from going dead flat.
-         totalEmissiveRadiance += uPulse * (pulse * (0.3 + uEnergy * 2.0) + 0.004);`,
+         totalEmissiveRadiance += uPulse * (pulse * (0.55 + uEnergy * 2.6) + 0.01);`,
       );
   };
 
   // Distinct key so three does not share a compiled program with plain
   // MeshStandardMaterials elsewhere in the scene.
-  material.customProgramCacheKey = () => "assembly-parts-v1";
+  material.customProgramCacheKey = () => "assembly-parts-v2";
 
   // Published on the material so the render loop can reach the uniforms
   // through the object graph rather than through a captured closure.
@@ -105,7 +107,7 @@ export function createEdgeMaterial(): {
     blending: THREE.AdditiveBlending,
     uniforms: {
       ...uniforms,
-      uColor: { value: BRASS },
+      uColor: { value: SIGNAL },
       uOpacity: { value: 1 },
     },
     vertexShader: /* glsl */ `
