@@ -90,17 +90,24 @@ export function Nav() {
               >
                 {section.label}
               </span>
+              {/* The visible mark is a hairline, but the link itself needs a
+                  real hit area and a focus ring that can actually be seen —
+                  an outline around a 1px box is not a focus indicator. */}
               <a
                 href={`#${section.id}`}
-                aria-current={i === active ? "true" : undefined}
+                aria-current={i === active ? "page" : undefined}
                 data-magnetic
-                className="block h-px bg-current transition-all duration-300"
-                style={{
-                  opacity: i === active ? 1 : 0.3,
-                  width: i === active ? "2rem" : "1rem",
-                  color: i === active ? "var(--color-brass)" : "var(--color-mist)",
-                }}
+                className="flex h-8 w-10 items-center justify-end focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass"
               >
+                <span
+                  aria-hidden
+                  className="block h-px bg-current transition-all duration-300"
+                  style={{
+                    opacity: i === active ? 1 : 0.3,
+                    width: i === active ? "2rem" : "1rem",
+                    color: i === active ? "var(--color-brass)" : "var(--color-mist)",
+                  }}
+                />
                 <span className="sr-only">{section.label}</span>
               </a>
             </li>

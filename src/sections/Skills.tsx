@@ -1,12 +1,13 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useRef } from "react";
 
 import { GutterIndex } from "@/components/ui/Drawing";
 import { SKILLS } from "@/data/work";
 import { useUI } from "@/lib/store";
 import { useChapterRange } from "@/lib/useChapterRange";
+import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
 
 /**
  * Pinned with position: sticky rather than a GSAP pin — no pin-spacer to fight
@@ -20,7 +21,7 @@ export function Skills() {
   const ref = useRef<HTMLElement>(null);
   const setActiveSkill = useUI((s) => s.setActiveSkill);
   const active = useUI((s) => s.activeSkill);
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionSafe();
 
   useChapterRange(ref, 1, 3, {
     start: "top top",

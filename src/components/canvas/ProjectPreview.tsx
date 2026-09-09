@@ -2,10 +2,10 @@
 
 import { useTexture } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import Image from "next/image";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
+import { ProjectImage } from "@/components/ui/ProjectImage";
 import { flux } from "@/lib/store";
 
 const vertexShader = /* glsl */ `
@@ -127,15 +127,17 @@ function Plane({ src, hover }: { src: string; hover: React.RefObject<number> }) 
   );
 }
 
+/**
+ * WebGL preview. Only mounted for capable devices with motion allowed — the
+ * plain path lives in ProjectImage so this module (and three.js with it) is
+ * never fetched otherwise.
+ */
 export default function ProjectPreview({
   src,
   alt,
-  simple,
 }: {
   src: string;
   alt: string;
-  /** Reduced motion or a low-tier device: a plain image, tilt-free. */
-  simple: boolean;
 }) {
   const hover = useRef(0);
   const wrap = useRef<HTMLDivElement>(null);
@@ -143,7 +145,7 @@ export default function ProjectPreview({
 
   useEffect(() => {
     const el = wrap.current;
-    if (!el || simple) return;
+    if (!el) return;
     // Only run the context while the preview is actually on screen.
     const io = new IntersectionObserver(
       ([entry]) => setVisible(entry.isIntersecting),
@@ -151,37 +153,17 @@ export default function ProjectPreview({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [simple]);
-
-  if (simple) {
-    return (
-      <div className="relative aspect-[3/2] w-full overflow-hidden bg-graphite">
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          sizes="(max-width: 768px) 100vw, 55vw"
-          className="object-cover"
-        />
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <div
       ref={wrap}
-      className="relative aspect-[3/2] w-full overflow-hidden bg-graphite"
+      className="relative"
       onPointerEnter={() => (hover.current = 1)}
       onPointerLeave={() => (hover.current = 0)}
     >
       {/* Real img underneath: the content is reachable even if WebGL fails. */}
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        sizes="(max-width: 768px) 100vw, 55vw"
-        className="object-cover"
-      />
+      <ProjectImage src={src} alt={alt} />
       {visible && (
         <Canvas
           className="absolute inset-0"

@@ -1,10 +1,11 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 import { PROJECTS } from "@/data/work";
 import { useUI } from "@/lib/store";
+import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
 
 /**
  * Progress is real: it tracks font readiness and the actual project textures
@@ -15,7 +16,7 @@ export function Preloader() {
   const [progress, setProgress] = useState(0);
   const [shown, setShown] = useState(0);
   const [done, setDone] = useState(false);
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionSafe();
   const startedAt = useRef(0);
 
   useEffect(() => {

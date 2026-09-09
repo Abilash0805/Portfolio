@@ -19,6 +19,11 @@
   --color-on-bone: #12151a;
   --color-bone-mute: #5c6167;
 
+  /* Muted label colour. Defaults to the value that passes on Ink and is
+     re-pointed by chapter-light to the value that passes on Bone, so small
+     mono labels clear 4.5:1 in both chapters (7.52:1 and 5.03:1). */
+  --color-muted-fg: #9aa1ac;
+
   /* Hairlines. Rules are the primary structural device on this site, so they
      are tokens rather than one-off border colors. */
   --color-rule-dark: color-mix(in oklab, #f2f3f0 14%, transparent);
@@ -123,6 +128,7 @@
   background-color: var(--color-bone);
   color: var(--color-on-bone);
   --color-rule-dark: var(--color-rule-light);
+  --color-muted-fg: var(--color-bone-mute);
 }
 
 /* The engineering-drawing grid: content hangs off a left rule with the

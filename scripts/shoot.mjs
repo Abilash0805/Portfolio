@@ -12,7 +12,12 @@ const browser = await launch({
     "--ignore-gpu-blocklist",
   ],
 });
-const page = await browser.newPage({ viewport: { width, height } });
+const page = await browser.newPage({
+  viewport: { width, height },
+  reducedMotion: process.env.SHOOT_REDUCED === "1" ? "reduce" : "no-preference",
+  isMobile: process.env.SHOOT_MOBILE === "1",
+  hasTouch: process.env.SHOOT_MOBILE === "1",
+});
 page.on("pageerror", (e) => console.log("PAGEERROR:", e.message.split("\n")[0]));
 page.on("response", (r) => {
   if (r.status() >= 400) console.log("HTTP", r.status(), r.url().slice(0, 120));

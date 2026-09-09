@@ -18,7 +18,7 @@ const SceneRoot = dynamic(() => import("@/components/canvas/SceneRoot"), {
  */
 function StaticConstruct() {
   return (
-    <div className="absolute inset-0 grid place-items-center">
+    <div className="absolute inset-0 grid place-items-center md:translate-x-[14%]">
       <svg
         width="420"
         height="420"

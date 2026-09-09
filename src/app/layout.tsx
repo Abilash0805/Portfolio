@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
   subsets: ["latin"],
-  axes: ["opsz", "wdth"],
+  axes: ["wdth"],
   display: "swap",
 });
 

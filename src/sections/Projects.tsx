@@ -4,11 +4,14 @@ import dynamic from "next/dynamic";
 import { useRef } from "react";
 
 import { GutterIndex, SpecTable } from "@/components/ui/Drawing";
+import { ProjectImage } from "@/components/ui/ProjectImage";
 import { RevealText, Rise } from "@/components/ui/RevealText";
 import { PROJECTS } from "@/data/work";
 import { useEnv } from "@/lib/useEnv";
 import { useChapterRange } from "@/lib/useChapterRange";
 
+// Only fetched when it will actually render, which keeps three.js out of the
+// bundle for reduced-motion and low-tier visitors entirely.
 const ProjectPreview = dynamic(
   () => import("@/components/canvas/ProjectPreview"),
   { ssr: false },
@@ -53,11 +56,15 @@ export function Projects() {
               }`}
             >
               <Rise>
-                <ProjectPreview
-                  src={project.image}
-                  alt={project.alt}
-                  simple={simple}
-                />
+                {simple ? (
+                  <ProjectImage
+                    src={project.image}
+                    alt={project.alt}
+                    priority={i === 0}
+                  />
+                ) : (
+                  <ProjectPreview src={project.image} alt={project.alt} />
+                )}
               </Rise>
             </div>
 

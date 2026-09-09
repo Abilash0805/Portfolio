@@ -239,13 +239,23 @@ export function Assembly({ tier }: { tier: "high" | "low" }) {
     pu.uTime.value = time;
     pu.uEnergy.value = energy;
 
-    // --- keep the construct clear of the text column ---------------------
+    // --- keep the construct clear of the copy ----------------------------
     // Wide viewports put the copy on the left, so the construct slides right.
+    // Narrow ones stack, so it lifts above the text block and shrinks instead.
     const wide = state.size.width / state.size.height > 1.15;
     group.position.x = THREE.MathUtils.lerp(
       group.position.x,
       wide ? 1.25 : 0,
       dt * 2.5,
+    );
+    group.position.y = THREE.MathUtils.lerp(
+      group.position.y,
+      wide ? 0 : 1.75,
+      dt * 2.5,
+    );
+    const targetScale = wide ? 1 : 0.6;
+    group.scale.setScalar(
+      THREE.MathUtils.lerp(group.scale.x, targetScale, dt * 2.5),
     );
 
     // --- the construct's own slow drift + pointer parallax ---------------

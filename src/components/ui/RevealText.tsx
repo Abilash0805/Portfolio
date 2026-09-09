@@ -1,6 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+
+import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
 import type { JSX, ReactNode } from "react";
 
 /**
@@ -20,7 +22,7 @@ export function RevealText({
   delay?: number;
   stagger?: number;
 }) {
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionSafe();
   const words = children.split(" ");
 
   // Cast to a concrete intrinsic so the polymorphic tag keeps a usable
@@ -88,7 +90,7 @@ export function Rise({
   className?: string;
   delay?: number;
 }) {
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionSafe();
   if (reduced) return <div className={className}>{children}</div>;
 
   return (

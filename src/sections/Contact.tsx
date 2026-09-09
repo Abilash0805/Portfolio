@@ -22,12 +22,20 @@ export function Contact() {
     <section
       ref={ref}
       id="contact"
-      className="relative z-10 page-x py-32 md:py-48"
+      className="relative z-10 page-x overflow-hidden py-32 md:py-48"
     >
-      <div className="drawing-grid mx-auto max-w-[88rem]">
+      {/* The construct returns for the closing chapter. The copy sits left of
+          it, and this keeps the overlap zone readable without dimming the
+          construct into mush. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-transparent"
+      />
+
+      <div className="drawing-grid relative mx-auto max-w-[88rem]">
         <GutterIndex n="04" label="Contact" />
 
-        <div className="md:col-span-8 md:col-start-3">
+        <div className="md:col-span-7 md:col-start-3">
           <h2 className="type-display text-display-l">
             <RevealText as="span" stagger={0.045}>
               Got something that needs building?
@@ -43,8 +51,10 @@ export function Contact() {
           </Rise>
         </div>
 
-        <div className="md:col-span-4 md:col-start-3 lg:col-span-4 lg:col-start-9">
-          <ul className="mt-16 md:mt-0">
+        {/* Links sit under the copy on the left so the construct owns the
+            right half outright, instead of being veiled into mush. */}
+        <div className="md:col-span-5 md:col-start-3 md:row-start-2">
+          <ul className="mt-14 md:mt-12">
             {links.map((link) => (
               <li key={link.href} className="rule-t">
                 <a
@@ -65,7 +75,7 @@ export function Contact() {
         </div>
       </div>
 
-      <div className="mx-auto mt-32 flex max-w-[88rem] items-end justify-between gap-6 md:mt-48">
+      <div className="relative mx-auto mt-32 flex max-w-[88rem] items-end justify-between gap-6 md:mt-48">
         <span className="type-mono text-mist">Abilash V</span>
         <span className="type-mono text-mist">Built from scratch, 2026</span>
       </div>
