@@ -14,6 +14,11 @@ competition deadlines.
    replace it; nothing else needs to change.
 2. **Check the phone dial code.** `PHONE_HREF` in `src/data/work.ts` assumes
    +91 (India). Change it there if that is wrong.
+3. **Set the site origin.** Copy `.env.example` to `.env.local` and set
+   `NEXT_PUBLIC_SITE_URL` to the real deployed domain — it backs `metadataBase`,
+   so canonical and Open Graph URLs depend on it. On Vercel it is inferred
+   automatically and you can skip this. It deliberately falls back to
+   `localhost` rather than a guessed domain.
 
 `studydesk.png` and `robotics.png` are intentionally designed visuals (an
 interface concept and a signal-path schematic), not screenshots. Regenerate

@@ -10,7 +10,17 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-const SITE = "https://abilash.dev";
+/**
+ * The deployed origin. Set NEXT_PUBLIC_SITE_URL once the domain is known;
+ * on Vercel it is inferred automatically. Deliberately NOT a guessed domain —
+ * a wrong metadataBase silently poisons every canonical and OG URL, and a
+ * localhost fallback is at least obviously wrong rather than plausibly wrong.
+ */
+const SITE =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
